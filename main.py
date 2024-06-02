@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from functions.gauss_seidel import Gauss_s
-from functions.ceros import biseccion, pos_falsa, newton
+from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function
 import numpy as np
 import sympy as sp
@@ -81,6 +81,25 @@ def ceros_newton_solution():
     return jsonify(response), 200
 
 
+@app.route("/ceros-secante", methods=["POST"])
+def ceros_secante_solution():
+    data = request.get_json()
+
+    expr_text = str(data["function"])
+    expr = sp.sympify(expr_text)
+    a = float(data["lim_inferior"])
+    b = float(data["lim_superior"])
+
+    tolerancia = float(data["tolerancia"])  # Asegúrate de que sea un float
+
+    raiz, iteraciones, valores_iteracion = secante(expr, a, b, tolerancia)
+
+    response = {
+        "raiz": raiz,
+        "iteraciones": iteraciones,
+        "valores_iteracion": valores_iteracion
+    }
+    return jsonify(response), 200
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @app.route("/gauss-seidel", methods=["POST"])

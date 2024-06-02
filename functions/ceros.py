@@ -13,20 +13,20 @@ def biseccion(f, a, b, tolerancia):
     contador = 0
     valores_iteracion = []
 
-    if f(a)*f(b)<0:
-        while abs(a-b)>tolerancia:
-            contador+=1
-            c= (a+b)/2
+    if f(a) * f(b) < 0:
+        while abs(a - b) > tolerancia:
+            contador += 1
+            c = (a + b) / 2
             valores_iteracion.append(c)
-            #print(f'iteracion {contador}, x={c}')
 
-            if f(a)*f(c)<0:
-                b=c
+            if f(a) * f(c) < 0:
+                b = c
             else:
-                a=c
+                a = c
+
         return c, contador, valores_iteracion
     else:
-        print("No cumple el teorema")
+        raise ValueError("El intervalo no cumple el teorema de Bolzano (f(a) * f(b) >= 0)")
 
 def pos_falsa(f, a, b, tolerancia):
     contador = 0
@@ -70,3 +70,18 @@ def newton(expr, x0, tol):
 
     return x1, contador, valores_iteracion
         
+
+def secante(expr, h0, h1, tolerancia):
+    valores_iteracion = []
+    contador = 0
+    x = sp.symbols('x')
+    f = sp.lambdify(x, expr, 'numpy')  # Convertir la expresión simbólica en una función
+
+    while abs(h0 - h1) > tolerancia:
+        h2 = h1 - f(h1) * (h0 - h1) / (f(h0) - f(h1))
+        h0 = h1
+        h1 = h2
+        valores_iteracion.append(h1)
+        contador += 1
+
+    return h1, contador, valores_iteracion
