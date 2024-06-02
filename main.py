@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 from functions.gauss_seidel import Gauss_s
-from functions.ceros import biseccion
-from functions.ceros import pos_falsa
+from functions.ceros import biseccion, pos_falsa, newton
 from functions.transform import cast_to_function
 import numpy as np
+import sympy as sp
+
 
 app = Flask(__name__)
 
@@ -46,8 +47,31 @@ def ceros_falsa_pos_solution():
     tolerancia = float(data["tolerancia"])  # Asegúrate de que sea un float
 
     raiz, iteraciones, valores_iteracion = pos_falsa(f, a, b, tolerancia)
+    
     if raiz is None:
         return jsonify({"error": "El intervalo no cumple con el teorema de Bolzano (f(a) * f(b) >= 0)"}), 400
+
+    response = {
+        "raiz": raiz,
+        "iteraciones": iteraciones,
+        "valores_iteracion": valores_iteracion
+    }
+    return jsonify(response), 200
+
+
+@app.route("/ceros-newton", methods=["POST"])
+def ceros_newton_solution():
+    data = request.get_json()
+
+    expr_text = str(data["function"])
+    expr = sp.sympify(expr_text)
+    a = float(data["lim_inferior"])
+    b = float(data["lim_superior"])
+    seed = (a + b) / 2
+
+    tolerancia = float(data["tolerancia"])  # Asegúrate de que sea un float
+
+    raiz, iteraciones, valores_iteracion = newton(expr, seed, tolerancia)
 
     response = {
         "raiz": raiz,

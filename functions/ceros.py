@@ -46,5 +46,27 @@ def pos_falsa(f, a, b, tolerancia):
         return c, contador, valores_iteracion
     else:
         return None, 0, []  # Retorna None, 0, [] si no cumple con el teorema
+    
+def newton(expr, x0, tol):
+    #--------------------
+    # expr: expresión simbólica
+    # x0: semilla
+    # tol: tolerancia
+    #-------------------
+    x = sp.symbols('x')
+    f = sp.lambdify(x, expr, 'numpy')
+    df = sp.lambdify(x, sp.diff(expr, x), 'numpy')
+    
+    contador = 0
+    valores_iteracion = []
 
+    x1 = x0 - f(x0) / df(x0)
+    valores_iteracion.append(x1)
+    while abs(x1 - x0) > tol:
+        x0 = x1
+        x1 = x0 - f(x0) / df(x0)
+        valores_iteracion.append(x1)
+        contador += 1
+
+    return x1, contador, valores_iteracion
         
