@@ -27,3 +27,24 @@ def biseccion(f, a, b, tolerancia):
         return c, contador, valores_iteracion
     else:
         print("No cumple el teorema")
+
+def pos_falsa(f, a, b, tolerancia):
+    contador = 0
+    valores_iteracion = []
+
+    if f(a) * f(b) < 0:
+        while True:
+            c = a - (f(a) * (a - b)) / (f(a) - f(b))
+            valores_iteracion.append(c)
+            contador += 1
+            if abs(f(c)) <= tolerancia:
+                break
+            if f(a) * f(c) < 0:
+                b = c
+            else:
+                a = c
+        return c, contador, valores_iteracion
+    else:
+        return None, 0, []  # Retorna None, 0, [] si no cumple con el teorema
+
+        

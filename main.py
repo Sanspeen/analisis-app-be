@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from functions.gauss_seidel import Gauss_s
-from functions.ceros.biseccion import biseccion
+from functions.ceros import biseccion
+from functions.ceros import pos_falsa
 from functions.transform import cast_to_function
 import numpy as np
 
@@ -32,6 +33,28 @@ def ceros_biseccion_solution():
         return jsonify(response)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+    
+
+
+@app.route("/ceros-falsa-posicion", methods=["POST"])
+def ceros_falsa_pos_solution():
+    data = request.get_json()
+
+    f = cast_to_function(str(data["function"]))
+    a = int(data["lim_inferior"])
+    b = int(data["lim_superior"])
+    tolerancia = float(data["tolerancia"])  # Asegúrate de que sea un float
+
+    raiz, iteraciones, valores_iteracion = pos_falsa(f, a, b, tolerancia)
+    if raiz is None:
+        return jsonify({"error": "El intervalo no cumple con el teorema de Bolzano (f(a) * f(b) >= 0)"}), 400
+
+    response = {
+        "raiz": raiz,
+        "iteraciones": iteraciones,
+        "valores_iteracion": valores_iteracion
+    }
+    return jsonify(response), 200
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
