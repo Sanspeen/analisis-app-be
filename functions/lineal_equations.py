@@ -23,3 +23,37 @@ def eliminacion_gaussiana(A,b):
 
     #print('x=',x[0],'y=',x[1],'z=',x[2])
     return x
+
+
+def Gauss_s(A, b, xo, tol):
+    cont = 0
+    errores = []
+
+    D = np.diag(np.diag(A))
+    L = D - np.tril(A)
+    U = D - np.triu(A)
+
+    Tg = np.dot(np.linalg.inv(D - L), U)  # (D-L)^-1 U
+    Cg = np.dot(np.linalg.inv(D - L), b)  # (D-L)^-1 b
+
+    lam, vec = np.linalg.eig(Tg)  # Calcula los valores propios
+    radio = max(abs(lam))  # Calcula el radio espectral
+    print(f'Radio espectral de Tg: {radio}')
+
+    if radio < 1:
+        x1 = np.dot(Tg, xo) + Cg
+        error = max(np.abs(x1 - xo))
+        errores.append(error)
+        cont += 1
+
+        while error > tol:
+            xo = x1
+            x1 = np.dot(Tg, xo) + Cg
+            error = max(np.abs(x1 - xo))
+            errores.append(error)
+            cont += 1
+
+        return x1, errores, radio
+    else:
+        print('El sistema iterativo no converge a la solución única del sistema')
+        return None, errores, radio

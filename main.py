@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
-from functions.gauss_seidel import Gauss_s
-from functions.lineal_equations import eliminacion_gaussiana
+from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function
 import numpy as np
@@ -101,7 +100,8 @@ def ceros_secante_solution():
         "valores_iteracion": valores_iteracion
     }
     return jsonify(response), 200
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Lineal Equations ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @app.route("/ecuaciones-lineales-eliminacion-g", methods=["POST"])
 def lineal_eq_gauss_elimination_solution():
@@ -117,36 +117,23 @@ def lineal_eq_gauss_elimination_solution():
     }
     return jsonify(response), 200
 
-# Lineal Equations ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-@app.route("/gauss-seidel", methods=["POST"])
-def gauss_seidel_solution():
-    A = [[4, -1, 0, -1, 0, 0, 0, 0, 0],
-         [-1, 4, -1, 0, -1, 0, 0, 0, 0],
-         [0, -1, 4, 0, 0, -1, 0, 0, 0],
-         [-1, 0, 0, 4, -1, 0, -1, 0, 0],
-         [0, -1, 0, -1, 4, -1, 0, -1, 0],
-         [0, 0, -1, 0, -1, 4, 0, 0, -1],
-         [0, 0, 0, -1, 0, 0, 4, -1, 0],
-         [0, 0, 0, 0, -1, 0, -1, 4, -1],
-         [0, 0, 0, 0, 0, -1, 0, -1, 4]]
-
-    b = [50, 20, 60, 30, 0, 40, 30, 0, 40]
-    x0 = np.zeros(9)
-    tol = 1e-6
+@app.route("/ecuaciones-lineales-gauss-seidel", methods=["POST"])
+def lineal_eq_gauss_seidel_solution():
+    data = request.get_json()
+    
+    matrix_A = np.array(data["matrix_A"])
+    matrix_B = np.array(data["matrix_B"])
+    x0 = np.zeros(len(matrix_B))  # Inicializar x0 como un vector de ceros
+    tol = float(data["tolerance"])  # 1e-6
 
     try:
-        x_sol, errores = Gauss_s(A, b, x0, tol)
+        x_sol, errores, radio = Gauss_s(matrix_A, matrix_B, x0, tol)
         
         result = {
-            "x_sol": x_sol.tolist(),  # Convertir a lista para que sea JSON serializable
-            "errores": errores
+            "result": x_sol.tolist(),  # Convertir a lista para que sea JSON serializable
+            "errores": errores,
+            "radio_espectral_tg": radio
         }
 
         print(errores)
@@ -157,7 +144,9 @@ def gauss_seidel_solution():
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 if __name__ == "__main__":
