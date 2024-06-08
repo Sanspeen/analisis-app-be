@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from functions.interpolation_and_adjustment import Pol_simple, Poly
 from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function
@@ -144,6 +145,31 @@ def lineal_eq_gauss_seidel_solution():
 
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
+
+# Interpolation and adjustment -----------------------------------------------------------------------------------------------------------------------------------------------
+
+@app.route("/interpolacion-lagrange", methods=["POST"])
+def interpolation_lagrange_solution():
+    data = request.get_json()
+    list_a = np.array(data["list_a"]) #var independiente
+    list_b = np.array(data["list_b"])
+    list_predict = np.array(data["list_predict"])
+
+
+    pol_simple_result = Pol_simple(list_a, list_b)
+
+    ux = np.linspace(min(list_a), max(list_a), 1000)
+
+    extended_predict_list = list(range(list_predict[0], list_predict[-1]))
+    aprox = [Poly(pol_simple_result, i) for i in extended_predict_list]
+
+    result = Poly(pol_simple_result, ux)
+
+    response = {
+        "result_polinomio": result.tolist(),
+        "result_aprox": aprox
+    }
+    return jsonify(response), 200
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
