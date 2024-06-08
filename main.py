@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from functions.gauss_seidel import Gauss_s
+from functions.lineal_equations import eliminacion_gaussiana
 from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function
 import numpy as np
@@ -102,6 +103,28 @@ def ceros_secante_solution():
     return jsonify(response), 200
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+@app.route("/ecuaciones-lineales-eliminacion-g", methods=["POST"])
+def lineal_eq_gauss_elimination_solution():
+    data = request.get_json()
+
+    matrix_A = np.array(data["matrix_A"])
+    matrix_B = np.array(data["matrix_B"])
+
+    result = eliminacion_gaussiana(matrix_A, matrix_B)
+
+    response = {
+        "result": result.tolist(),
+    }
+    return jsonify(response), 200
+
+# Lineal Equations ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 @app.route("/gauss-seidel", methods=["POST"])
 def gauss_seidel_solution():
     A = [[4, -1, 0, -1, 0, 0, 0, 0, 0],
@@ -136,8 +159,6 @@ def gauss_seidel_solution():
         return jsonify({"error": str(e)}), 400
     
 
-
-    
 
 if __name__ == "__main__":
     app.run(debug=True)
