@@ -34,3 +34,21 @@ def Poly(a_i,ux):
         P=P+a_i[i]*ux**i
         
     return P
+
+
+    #minimos cuadrados
+def min_c(xd, yd):
+    #--------------------------
+    #xd: datos independientes
+    #yd: datos dependientes
+    #--------------------------
+    n = len(xd)
+    sx = sum(xd)
+    sf = sum(yd)
+    sx2 =sum(xd**2)
+    sfx = sum(xd*yd)
+    
+    ao = (sf*sx2-sx*sfx)/(n*sx2-(sx)**2) #intercepto de la recta
+    a1 = (n*sfx-sf*sx)/(n*sx2-(sx)**2) #pendiente de la recta
+    
+    return ao,a1

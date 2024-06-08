@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from functions.interpolation_and_adjustment import Pol_simple, Poly
+from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
 from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function
@@ -170,6 +170,25 @@ def interpolation_lagrange_solution():
         "result_aprox": aprox
     }
     return jsonify(response), 200
+
+
+@app.route("/interpolacion-minimos-cuadrados", methods=["POST"])
+def interpolation_mc_solution():
+    data = request.get_json()
+    list_a = np.array(data["list_a"]) #var independiente
+    list_b = np.array(data["list_b"])
+
+    result1, result2 = min_c(list_a, list_b)
+
+    response = {    
+        "pendiente": result1.tolist(),
+        "intercepto": result2.tolist(),
+
+    }
+    return jsonify(response), 200
+
+
+
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
