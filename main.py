@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from functions.differential_equations import Euler, R_Kutta
 from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
 from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
@@ -188,6 +189,60 @@ def interpolation_mc_solution():
     return jsonify(response), 200
 
 
+# Diff Eq -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+@app.route("/diff-eq-kutta", methods=["POST"])
+def diff_eq_euler_solution():
+    data = request.get_json()
+
+    # Convertir la expresión en texto a una función
+    f = cast_to_function(str(data["function"]))
+
+    # Definir los límites del intervalo y la tolerancia desde el body
+    a = float(data["lim_inferior"])
+    b = float(data["lim_superior"])
+    initial_conditions = float(data["init_conditions"][0])
+    h = float(data["integration_step"])
+
+    try:
+        r1, r2 = Euler(f, a, b, initial_conditions, h)
+
+        response = {
+            "raiz": r1.tolist(),
+            "iteraciones": r2
+        }
+
+        return jsonify(response)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/diff-eq-euler", methods=["POST"])
+def diff_eq_kutta_solution():
+    data = request.get_json()
+
+    # Convertir la expresión en texto a una función
+    f = cast_to_function(str(data["function"]))
+
+    # Definir los límites del intervalo y la tolerancia desde el body
+    a = float(data["lim_inferior"])
+    b = float(data["lim_superior"])
+    initial_conditions = float(data["init_conditions"][0])
+    h = float(data["integration_step"])
+
+    try:
+        r1, r2 = R_Kutta(f, a, b, initial_conditions, h)
+
+        response = {
+            "raiz": r1.tolist(),
+            "iteraciones": r2.tolist()
+        }
+
+        return jsonify(response)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+        
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
