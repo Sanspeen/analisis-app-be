@@ -114,7 +114,8 @@ def lineal_eq_gauss_elimination_solution():
 
     matrix_A = np.array(data["matrix_A"])
     matrix_B = np.array(data["matrix_B"])
-
+    print(matrix_A)
+    print(matrix_B)
     result = eliminacion_gaussiana(matrix_A, matrix_B)
 
     response = {
