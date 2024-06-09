@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
+from functions.taylor_series import S_taylor, cota_t
 from functions.differential_equations import Euler, R_Kutta
 from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
 from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
-from functions.transform import cast_to_function
+from functions.transform import cast_to_function, cast_to_function_taylor
 import numpy as np
 import sympy as sp
 
@@ -243,6 +244,23 @@ def diff_eq_kutta_solution():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
         
+# Taylor series ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+@app.route("/series-taylor", methods=["POST"])
+def series_taylor_solution():
+    data = request.get_json()
+    f = cast_to_function_taylor(str(data["function"]))
+    x0 = int(data["x0"])
+    n = int(data["num_iteraciones"])
+
+    try:
+        P = S_taylor(f, x0, n)
+        response = {
+            "polinomio": str(P)  # Convertir el polinomio a string para enviarlo como JSON
+        }
+        return jsonify(response)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

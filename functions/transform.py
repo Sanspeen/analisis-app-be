@@ -13,3 +13,12 @@ def cast_to_function(expr_text):
     
     return f
 
+
+def cast_to_function_taylor(expr_text):
+    # Definir la variable simbólica
+    x = sp.symbols('x')
+    
+    # Convertir el texto en una expresión SymPy
+    expr = sp.sympify(expr_text)
+    
+    return expr
