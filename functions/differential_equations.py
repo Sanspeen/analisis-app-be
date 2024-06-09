@@ -20,4 +20,4 @@ def R_Kutta(f, a, b, co, h):
         k4 = h * f(t[i] + h)
         y_next = yeu[-1] + (k1 + 2 * k2 + 2 * k3 + k4) / 6
         yeu.append(y_next)
-    return t, np.array(yeu)
+    return t, yeu

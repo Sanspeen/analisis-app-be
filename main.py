@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from functions.taylor_series import S_taylor, cota_t
 from functions.differential_equations import Euler, R_Kutta
 from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
@@ -10,6 +11,7 @@ import sympy as sp
 
 
 app = Flask(__name__)
+CORS(app) 
 
 # Ceros ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 @app.route("/ceros-biseccion", methods=["POST"])
@@ -194,32 +196,6 @@ def interpolation_mc_solution():
 
 
 @app.route("/diff-eq-kutta", methods=["POST"])
-def diff_eq_euler_solution():
-    data = request.get_json()
-
-    # Convertir la expresión en texto a una función
-    f = cast_to_function(str(data["function"]))
-
-    # Definir los límites del intervalo y la tolerancia desde el body
-    a = float(data["lim_inferior"])
-    b = float(data["lim_superior"])
-    initial_conditions = float(data["init_conditions"][0])
-    h = float(data["integration_step"])
-
-    try:
-        r1, r2 = Euler(f, a, b, initial_conditions, h)
-
-        response = {
-            "raiz": r1.tolist(),
-            "iteraciones": r2
-        }
-
-        return jsonify(response)
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
-
-@app.route("/diff-eq-euler", methods=["POST"])
 def diff_eq_kutta_solution():
     data = request.get_json()
 
@@ -234,6 +210,32 @@ def diff_eq_kutta_solution():
 
     try:
         r1, r2 = R_Kutta(f, a, b, initial_conditions, h)
+
+        response = {
+            "raiz": r1.tolist(),
+            "iteraciones": r2
+        }
+
+        return jsonify(response)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/diff-eq-euler", methods=["POST"])
+def diff_eq_euler_solution():
+    data = request.get_json()
+
+    # Convertir la expresión en texto a una función
+    f = cast_to_function(str(data["function"]))
+
+    # Definir los límites del intervalo y la tolerancia desde el body
+    a = float(data["lim_inferior"])
+    b = float(data["lim_superior"])
+    initial_conditions = float(data["init_conditions"][0])
+    h = float(data["integration_step"])
+
+    try:
+        r1, r2 = Euler(f, a, b, initial_conditions, h)
 
         response = {
             "raiz": r1.tolist(),
