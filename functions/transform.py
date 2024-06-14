@@ -26,7 +26,10 @@ def cast_to_function_diff_eq(func_str):
     f = sp.lambdify((t, y), expr, 'numpy')
     return f
 
-def cast_to_function_taylor(expr_text):
-    x = sp.symbols('x')
-    expr = sp.sympify(expr_text)
+def cast_to_function_taylor(func_str):
+    func_str = func_str.replace(' ', '')  # Quitar espacios innecesarios
+    try:
+        expr = sp.sympify(func_str)
+    except sp.SympifyError as e:
+        raise ValueError(f"Error al parsear la función: {e}")
     return expr

@@ -6,11 +6,13 @@ from math import factorial
 def S_taylor(f, x0, n):
     x = sp.symbols('x')
     P = 0
+    coefficients = []
     for k in range(n + 1):
         df = sp.diff(f, x, k)
         dfxo = df.subs(x, x0)
         P = P + dfxo * (x - x0) ** k / factorial(k)
-    return P
+        coefficients.append(float(dfxo) / factorial(k))  # Convertir a float
+    return coefficients
 
 def cota_t(f, x0, xp, n):
     x = sp.symbols('x')

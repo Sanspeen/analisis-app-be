@@ -255,14 +255,14 @@ def diff_eq_euler_solution():
 @app.route("/series-taylor", methods=["POST"])
 def series_taylor_solution():
     data = request.get_json()
-    f = cast_to_function_taylor(str(data["function"]))
+    f = cast_to_function_taylor(data["function"])
     x0 = int(data["x0"])
     n = int(data["num_iteraciones"])
 
     try:
-        P = S_taylor(f, x0, n)
+        coefficients = S_taylor(f, x0, n)
         response = {
-            "polinomio": str(P)  # Convertir el polinomio a string para enviarlo como JSON
+            "coefficients": coefficients  # Enviar los coeficientes como JSON
         }
         return jsonify(response)
     except ValueError as e:
