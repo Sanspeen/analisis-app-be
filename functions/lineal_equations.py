@@ -57,3 +57,27 @@ def Gauss_s(A, b, xo, tol):
     else:
         print('El sistema iterativo no converge a la solución única del sistema')
         return None, errores, radio
+    
+
+
+def pivoteo(A, b):
+    A = A.astype(np.float64)
+    b = b.astype(np.float64)
+    
+    n = len(b)
+    for i in range(n):
+        max_fila = np.argmax(np.abs(A[i:n, i])) + i
+        
+        if A[max_fila, i] == 0:
+            raise ValueError("El sistema no tiene solución única.")
+        
+        A[[i, max_fila]] = A[[max_fila, i]]
+        b[[i, max_fila]] = b[[max_fila, i]]
+        for j in range(i+1, n):
+            factor = A[j, i] / A[i, i]
+            A[j, i:] -= factor * A[i, i:]
+            b[j] -= factor * b[i]
+    x = np.zeros(n)
+    for i in range(n-1, -1, -1):
+        x[i] = (b[i] - np.dot(A[i, i+1:], x[i+1:])) / A[i, i]
+    return x

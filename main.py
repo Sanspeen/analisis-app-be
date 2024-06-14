@@ -3,7 +3,7 @@ from flask_cors import CORS
 from functions.taylor_series import S_taylor, cota_t
 from functions.differential_equations import Euler, R_Kutta
 from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
-from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
+from functions.lineal_equations import eliminacion_gaussiana, Gauss_s, pivoteo
 from functions.ceros import biseccion, pos_falsa, newton, secante
 from functions.transform import cast_to_function, cast_to_function_taylor, cast_to_function_diff_eq
 import numpy as np
@@ -121,6 +121,19 @@ def lineal_eq_gauss_elimination_solution():
     }
     return jsonify(response), 200
 
+@app.route("/ecuaciones-lineales-pivoteo", methods=["POST"])
+def lineal_eq_pivoteo_solution():
+    data = request.get_json()
+
+    matrix_A = np.array(data["matrix_A"], dtype=np.float64)
+    matrix_B = np.array(data["matrix_B"], dtype=np.float64)
+    result = pivoteo(matrix_A, matrix_B)
+
+    response = {
+        "result": result.tolist(),
+    }
+    return jsonify(response), 200
+
 
 @app.route("/ecuaciones-lineales-gauss-seidel", methods=["POST"])
 def lineal_eq_gauss_seidel_solution():
@@ -188,7 +201,6 @@ def interpolation_mc_solution():
 
 
 # Diff Eq -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 @app.route("/diff-eq-kutta", methods=["POST"])
 def diff_eq_kutta_solution():
