@@ -5,7 +5,7 @@ from functions.differential_equations import Euler, R_Kutta
 from functions.interpolation_and_adjustment import Pol_simple, Poly, min_c
 from functions.lineal_equations import eliminacion_gaussiana, Gauss_s
 from functions.ceros import biseccion, pos_falsa, newton, secante
-from functions.transform import cast_to_function, cast_to_function_taylor
+from functions.transform import cast_to_function, cast_to_function_taylor, cast_to_function_diff_eq
 import numpy as np
 import sympy as sp
 
@@ -207,21 +207,20 @@ def diff_eq_kutta_solution():
         r1, r2 = R_Kutta(f, a, b, initial_conditions, h)
 
         response = {
-            "raiz": r1.tolist(),
-            "iteraciones": r2
+            "tiempo": r1.tolist(),
+            "yeu": r2
         }
 
         return jsonify(response)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-
 @app.route("/diff-eq-euler", methods=["POST"])
 def diff_eq_euler_solution():
     data = request.get_json()
 
     # Convertir la expresión en texto a una función
-    f = cast_to_function(str(data["function"]))
+    f = cast_to_function_diff_eq(str(data["function"]))
 
     # Definir los límites del intervalo y la tolerancia desde el body
     a = float(data["lim_inferior"])
@@ -233,14 +232,13 @@ def diff_eq_euler_solution():
         r1, r2 = Euler(f, a, b, initial_conditions, h)
 
         response = {
-            "raiz": r1.tolist(),
-            "iteraciones": r2
+            "tiempo": r1.tolist(),
+            "yeu": r2
         }
 
         return jsonify(response)
-    except ValueError as e:
+    except Exception as e:
         return jsonify({"error": str(e)}), 400
-        
 # Taylor series ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @app.route("/series-taylor", methods=["POST"])

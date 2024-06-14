@@ -5,8 +5,9 @@ def Euler(f, a, b, co, h):
     t = np.linspace(a, b, n + 1)
     yeu = [co]
     for i in range(n):
-        yeu.append(yeu[i] + h * f(t[i]))  # Aquí solo usamos t[i]
+        yeu.append(yeu[i] + h * f(t[i], yeu[i]))
     return t, yeu
+
 
 # Método de Runge-Kutta de cuarto orden (RK4)
 def R_Kutta(f, a, b, co, h):
